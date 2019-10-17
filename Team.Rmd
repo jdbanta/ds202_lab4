@@ -9,22 +9,44 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+```{r}
+library(readxl)
+defense <- read_excel('cyclonesFootball2018.xlsx', sheet='Defensive')
+str(defense)
 ```
 
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r}
+offense <- read_excel('cyclonesFootball2018.xlsx', sheet='Offensive')
+bio <- read_excel('cyclonesFootball2018.xlsx', sheet='Biography')
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+Cleaning
+```{r}
+library(dplyr)
+library(tidyr)
+offense$Name<-as.factor(offense$Name)
+offense$Opponent_Opponent<-as.factor(offense$Opponent_Opponent)
+defense$Opponent_Opponent<-as.factor(defense$Opponent_Opponent)
+defense$Name<-as.factor(defense$Name)
+bio$Weight<-as.numeric(bio$Weight)
+colo<-c("Receiving_REC","Receiving_YDS","Receiving_TD","Rushing_ATT","Rushing_YDS","Rushing_TD","Passing_CMP-ATT","Passing_YDS","Passing_TD","Passing_INT")
+offense[colo]<-sapply(offense[colo], as.numeric)
+cold<-c("Tackles_Solo","Tackles_ASST","Tackles_TFL","Tackles_Sack","Turnover_FF","Turnover_FR","Turnover_INT","Pass_QBH","Pass_PB")
+defense[cold]<-sapply(defense[cold],as.numeric)
+bio<-separate(data=bio,col=Height,into=c("Feet","inc"),sep="\\-")
+bio$Feet<-as.numeric(bio$Feet)
+bio$inc<-as.numeric(bio$inc)
+bio$height_in_inches<-(bio$Feet*12+bio$inc)
+head(bio)
+colb<-c("Name","Position","Class","Hometown","Highschool")
+bio[colb]<-lapply(bio[colb],factor)
+bioClean<-select(bio,-c("Feet","inc"))
+head(bioClean)
+defClean<-defense
+offClean<-offense
+sapply(offClean,class)
+sapply(defClean,class)
+sapply(bioClean,class)
+```
+
