@@ -1,13 +1,22 @@
 ---
-title: "Team"
-author: "John Banta"
+title: "DS 202 Lab 4"
+author: "John Banta & Kelsey McInturff"
 date: "10/17/2019"
 output: html_document
 ---
+Owner username: jdbanta
+
+Partner username: kmcintur
+
+Link to repo: https://github.com/jdbanta/ds202_lab4
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
+# Dataset: 2018 Cyclone Football Data
+
+This lab works with an excerpt of the individual player data of the Cyclone football team.
 
 ```{r}
 library(readxl)
@@ -22,6 +31,7 @@ bio <- read_excel('cyclonesFootball2018.xlsx', sheet='Biography')
 
 
 ## Cleaning
+# 1.
 ```{r}
 library(dplyr)
 library(tidyr)
@@ -29,11 +39,19 @@ offense$Name<-as.factor(offense$Name)
 offense$Opponent_Opponent<-as.factor(offense$Opponent_Opponent)
 defense$Opponent_Opponent<-as.factor(defense$Opponent_Opponent)
 defense$Name<-as.factor(defense$Name)
+```
+
+# 2.
+```{r}
 bio$Weight<-as.numeric(bio$Weight)
 colo<-c("Receiving_REC","Receiving_YDS","Receiving_TD","Rushing_ATT","Rushing_YDS","Rushing_TD","Passing_CMP-ATT","Passing_YDS","Passing_TD","Passing_INT")
 offense[colo]<-sapply(offense[colo], as.numeric)
 cold<-c("Tackles_Solo","Tackles_ASST","Tackles_TFL","Tackles_Sack","Turnover_FF","Turnover_FR","Turnover_INT","Pass_QBH","Pass_PB")
 defense[cold]<-sapply(defense[cold],as.numeric)
+```
+
+# 3.
+```{r}
 bio<-separate(data=bio,col=Height,into=c("Feet","inc"),sep="\\-")
 bio$Feet<-as.numeric(bio$Feet)
 bio$inc<-as.numeric(bio$inc)
@@ -41,10 +59,17 @@ bio$height_in_inches<-(bio$Feet*12+bio$inc)
 head(bio)
 colb<-c("Name","Position","Class","Hometown","Highschool")
 bio[colb]<-lapply(bio[colb],factor)
+
 bioClean<-select(bio,-c("Feet","inc"))
 head(bioClean)
+
 defClean<-defense
+
 offClean<-offense
+```
+
+# 4.
+```{r}
 sapply(offClean,class)
 sapply(defClean,class)
 sapply(bioClean,class)
