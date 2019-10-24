@@ -21,7 +21,7 @@ bio <- read_excel('cyclonesFootball2018.xlsx', sheet='Biography')
 ```
 
 
-Cleaning
+## Cleaning
 ```{r}
 library(dplyr)
 library(tidyr)
@@ -49,4 +49,42 @@ sapply(offClean,class)
 sapply(defClean,class)
 sapply(bioClean,class)
 ```
+
+## Tidying Part A
+# 1.
+```{r}
+defCleanGather = gather(defClean,key="Statistic", value="Value", 3:11)
+```
+
+# 2.
+```{r}
+library(ggplot2)
+ggplot(defCleanGather, aes(x=Value)) + geom_histogram(binwidth=0.5) + facet_wrap(~Statistic)
+```
+
+The turnover skills (Turnover_FF, Turnover_FR, and Turnover_INT) are the rarest defensive skills since almost all of the values are near 0 and only a few values are near 1.
+
+# 3.
+```{r}
+WVKSsolo <- defCleanGather %>% filter(Statistic=="Tackles_Solo") %>% 
+  spread(key = Opponent_Opponent, value = Value)
+
+ggplot(WVKSsolo, aes(x=`West Virginia`, y=`Kansas State`)) + geom_point() + ggtitle("Solo Tackles Against West Virginia and Kansas State")
+```
+
+ISU had a better defense agaisnt Kansas State, since there were more defensive tackles agaisnt Kansas State than they did against West Virginia.
+
+
+## Tidying Part B
+# 1.
+```{r}
+bioCleanSeparate <- separate(bioClean, Hometown, into = c("City","State"), sep = ",")
+```
+
+# 2.
+```{r}
+StateCount <- bioCleanSeparate %>% group_by(State) %>% summarize(n=n())
+```
+
+Number of players from each state (or country): Arizona=3, Arkansas=2, Australia=2, California=8, D.C.=1, Florida=8, Georgia=2, Illinois=5, Iowa=44, Kansas=3, Massachusettes=1, Maryland=1, Michigan=5, Minnesota=2, Missippi=1, Montana=1, Nebraska=1, Nigeria=1, Ohio=10, Oklahoma=4, Pennsylvania=2, South Carolina=2, Texas=9, Virginia=1, Wisconsin=4.
 
