@@ -57,7 +57,7 @@ defCleanGather = gather(defClean,key="Statistic", value="Value", 3:11)
 ```
 
 # 2.
-```{r}
+```{r, echo=FALSE}
 library(ggplot2)
 ggplot(defCleanGather, aes(x=Value)) + geom_histogram(binwidth=0.5) + facet_wrap(~Statistic)
 ```
@@ -65,7 +65,7 @@ ggplot(defCleanGather, aes(x=Value)) + geom_histogram(binwidth=0.5) + facet_wrap
 The turnover skills (Turnover_FF, Turnover_FR, and Turnover_INT) are the rarest defensive skills since almost all of the values are near 0 and only a few values are near 1.
 
 # 3.
-```{r}
+```{r, echo=FALSE}
 WVKSsolo <- defCleanGather %>% filter(Statistic=="Tackles_Solo") %>% 
   spread(key = Opponent_Opponent, value = Value)
 
@@ -82,9 +82,38 @@ bioCleanSeparate <- separate(bioClean, Hometown, into = c("City","State"), sep =
 ```
 
 # 2.
-```{r}
+```{r, echo=FALSE}
 StateCount <- bioCleanSeparate %>% group_by(State) %>% summarize(n=n())
 ```
 
 Number of players from each state (or country): Arizona=3, Arkansas=2, Australia=2, California=8, D.C.=1, Florida=8, Georgia=2, Illinois=5, Iowa=44, Kansas=3, Massachusettes=1, Maryland=1, Michigan=5, Minnesota=2, Missippi=1, Montana=1, Nebraska=1, Nigeria=1, Ohio=10, Oklahoma=4, Pennsylvania=2, South Carolina=2, Texas=9, Virginia=1, Wisconsin=4.
 
+## Joining data frames
+
+# 1.
+
+```{r}
+offbio<-inner_join(offClean,bioClean,by="Name")
+colnames(offbio)
+```
+
+# 2.
+
+```{r, echo=FALSE}
+ggplot(data=offbio,aes(x=Weight,y=Receiving_YDS))+geom_point()+labs(x="Weight",y="Receiving Yards",title="Scatterplot of Weight and Receving Yards")
+```
+
+It appears that the players that weigh 225 pounds have the most receiving yards. However, with the removal of 15 rows because of missing values includes the linemen who only block and don't run routes.
+
+# 3.
+
+Did a lot of receiving touchdowns from the Iowa State football team come from players that were from Iowa?
+
+```{r, echo=FALSE}
+offbio1<-inner_join(offClean,bioCleanSeparate,by="Name")
+offbio1$State<-as.factor(offbio1$State)
+ggplot(data=offbio1,aes(x=State,y=Receiving_TD))+geom_count()+labs(x="State",y="Receiving Touchdowns")
+
+```
+
+It looks like most of the receivers had no touchdowns, but it looks like there were multiple states with at least one player with at least one touchdown with the State of Maryland giving the most touchdowns. It also looks like the State of Iowa contributed no receiving touchdowns to the Iowa State football team in 2018.
